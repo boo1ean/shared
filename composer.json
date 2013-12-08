@@ -1,0 +1,15 @@
+{
+    "name": "boo1ean/shared",
+    "description": "Shared storage using native shared memory functions",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Egor Gumenyuk",
+            "email": "boo1ean0807@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+
+    }
+}
