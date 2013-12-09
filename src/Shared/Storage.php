@@ -92,6 +92,15 @@ class Storage
 	}
 
 	/**
+	 * Remove data from storage
+	 * @param string $key
+	 */
+	public function forget($key) {
+		$this->check();
+		return $this->unsetValue($key);
+	}
+
+	/**
  	 * Returns current shm segment identifier
 	 * @return int
 	 */
@@ -179,6 +188,16 @@ class Storage
 		$data[$key] = $value;
 		$this->writeData($data);
 	}
+
+	/**
+	 * Removes item from storage
+	 * @param string $key
+	 */
+	protected function unsetValue($key) {
+		$data = $this->readData();
+		unset($data[$key]);
+		$this->writeData($data);
+	}	
 
 	/**
 	 * Read value from shm segment
