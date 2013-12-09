@@ -63,8 +63,8 @@ class Storage
 	 * Create shared memory storage with given key
 	 * @param string $key
 	 */
-	public function __construct($size = self::DEFAULT_SHM_SIZE, $key = self::DEFAULT_SHM_KEY) {
-		$this->size = (int) $size;
+	public function __construct($key = self::DEFAULT_SHM_KEY, $size = self::DEFAULT_SHM_SIZE) {
+		$this->size = intval($size);
 		$this->key  = (string) $key;
 
 		$this->setupSegment();
