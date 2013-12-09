@@ -1,6 +1,7 @@
 {
     "name": "boo1ean/shared",
     "description": "Shared storage using native shared memory functions",
+    "keywords": ["storage", "shared", "shared memory", "shm"],
     "license": "MIT",
     "authors": [
         {

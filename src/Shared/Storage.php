@@ -248,3 +248,7 @@ class Storage
 		return shmop_read($this->shm, $offset, $size);
 	}
 }
+
+$s = new Storage();
+echo $s->get('name');
+//$s->set('name', 'hey');
