@@ -12,5 +12,9 @@
     "minimum-stability": "dev",
     "require": {
 
+    },
+
+    "autoload": {
+        "psr-0": { "Shared": "src/" }
     }
 }
