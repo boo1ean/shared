@@ -35,7 +35,7 @@ class Storage
 	const SHM_CREATE_PERMISSIONS = 0644;
 
 	/**
- 	 * Default shared memory segment size (1 MB)
+	 * Default shared memory segment size (1 MB)
 	 * @const int
 	 */
 	const DEFAULT_SHM_SIZE = 1048576;
@@ -51,11 +51,12 @@ class Storage
 	 * Storable data types
 	 * @const string
 	 */
-	const T_ARRAY  = 'a';
-	const T_STRING = 's';
-	const T_INT    = 'i';
-	const T_OBJECT = 'o';
-	const T_DOUBLE = 'd';
+	const T_ARRAY   = 'a';
+	const T_STRING  = 's';
+	const T_INT     = 'i';
+	const T_OBJECT  = 'o';
+	const T_DOUBLE  = 'd';
+	const T_BOOLEAN = 'b';
 
 	/**
 	 * Destroy flag
@@ -111,7 +112,17 @@ class Storage
 	}
 
 	/**
- 	 * Returns current shm segment identifier
+	 * Check if storage has given key
+	 * @return bool
+	 */
+	public function has($key) {
+		$this->check();
+		$data = $this->readData();
+		return isset($data[$key]);
+	}
+
+	/**
+	 * Returns current shm segment identifier
 	 * @return int
 	 */
 	public function getIdentifier() {
@@ -196,7 +207,12 @@ class Storage
 	protected function writeValue($key, $value) {
 		$data = $this->readData();
 		$data[$key] = $this->encode($value);
-		$this->writeData($data);
+
+		if ($this->writeData($data)) {
+			return $value;
+		}
+
+		return false;
 	}
 
 	/**
@@ -206,7 +222,7 @@ class Storage
 	protected function unsetValue($key) {
 		$data = $this->readData();
 		unset($data[$key]);
-		$this->writeData($data);
+		return $this->writeData($data);
 	}	
 
 	/**
@@ -225,7 +241,7 @@ class Storage
 	 */
 	protected function writeData(array $data) {
 		$size = $this->write(self::SHM_DATA_OFFSET, json_encode($data));
-		$this->updateSize($size);
+		return $this->updateSize($size);
 	}
 
 	/**
@@ -269,6 +285,8 @@ class Storage
 				return self::T_ARRAY . json_encode($val);
 			case is_int($val):
 				return self::T_INT . $val;
+			case is_bool($val):
+				return self::T_BOOLEAN . $val;
 			case is_float($val):
 				return self::T_DOUBLE . $val;
 			case is_object($val):
@@ -290,6 +308,8 @@ class Storage
 				return json_decode($val, true);
 			case self::T_INT:
 				return intval($val);
+			case self::T_BOOLEAN:
+				return !!$val;
 			case self::T_DOUBLE:
 				return floatval($val);
 			case self::T_OBJECT:
