@@ -48,6 +48,16 @@ class Storage
 	const SHM_DATA_OFFSET = 10;
 
 	/**
+	 * Storable data types
+	 * @const string
+	 */
+	const T_ARRAY  = 'a';
+	const T_STRING = 's';
+	const T_INT    = 'i';
+	const T_OBJECT = 'o';
+	const T_DOUBLE = 'd';
+
+	/**
 	 * Destroy flag
 	 * @var bool
 	 */
@@ -185,7 +195,7 @@ class Storage
 	 */
 	protected function writeValue($key, $value) {
 		$data = $this->readData();
-		$data[$key] = $value;
+		$data[$key] = $this->encode($value);
 		$this->writeData($data);
 	}
 
@@ -206,7 +216,7 @@ class Storage
 	 */
 	protected function readValue($key) {
 		$data = $this->readData();
-		return isset($data[$key]) ? $data[$key] : null;
+		return isset($data[$key]) ? $this->decode($data[$key]) : null;
 	}
 
 	/**
@@ -247,8 +257,45 @@ class Storage
 	protected function read($offset, $size) {
 		return shmop_read($this->shm, $offset, $size);
 	}
-}
 
-$s = new Storage();
-echo $s->get('name');
-//$s->set('name', 'hey');
+	/**
+	 * Serialize value with type prefix
+	 * @param mixed $value
+	 * @return string encoded value
+	 */
+	protected function encode($val) {
+		switch (true) {
+			case is_array($val):
+				return self::T_ARRAY . json_encode($val);
+			case is_int($val):
+				return self::T_INT . $val;
+			case is_float($val):
+				return self::T_DOUBLE . $val;
+			case is_object($val):
+				return self::T_OBJECT . serialize($val);
+			default:
+				return self::T_STRING . $val;
+		}
+	}
+
+	/**
+	 * Unserialize value from storage
+	 * @param string $encoded
+	 * @return mixed
+	 */
+	protected function decode($encoded) {
+		$val = substr($encoded, 1);
+		switch ($encoded[0]) {
+			case self::T_ARRAY:
+				return json_decode($val, true);
+			case self::T_INT:
+				return intval($val);
+			case self::T_DOUBLE:
+				return floatval($val);
+			case self::T_OBJECT:
+				return unserialize($val);
+			default:
+				return $val;
+		}
+	}
+}
