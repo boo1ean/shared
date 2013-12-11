@@ -188,7 +188,7 @@ class Storage
 	 */
 	protected function updateSize($size) {
 		$size = sprintf('%' . self::SHM_DATA_OFFSET . 'd', intval($size));
-		return $this->write(0, $size);
+		return !!$this->write(0, $size);
 	}
 
 	/**
