@@ -10,8 +10,9 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {
 
+    "require": {
+        "phpunit/phpunit": "3.7.*@dev"
     },
 
     "autoload": {
